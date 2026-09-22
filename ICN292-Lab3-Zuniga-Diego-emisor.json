@@ -1,0 +1,124 @@
+{
+  "name": "ICN292-Lab3 Emisor de solicitudes",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "14f28f2d-67cd-4f3f-b179-85b955fd12f7",
+      "name": "Ejecutar emisor",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"solicitudes\": [\n    {\"id_solicitud\": \"DEV-1115\", \"sku\": \"AU-210\", \"unidades\": \"1\", \"monto\": \"19990\", \"dias_desde_compra\": \"3\", \"estado_producto\": \"sin_abrir\", \"email_cliente\": \"cliente1@example.cl\"},\n    {\"id_solicitud\": \"DEV-1116\", \"sku\": \"TE-330\", \"unidades\": \"2\", \"monto\": \"69980\", \"dias_desde_compra\": \"5\", \"estado_producto\": \"abierto_sin_uso\", \"email_cliente\": \"cliente2@example.cl\"},\n    {\"id_solicitud\": \"DEV-1117\", \"sku\": \"HV-050\", \"unidades\": \"1\", \"monto\": \"24990\", \"dias_desde_compra\": \"12\", \"estado_producto\": \"con_fallas\", \"email_cliente\": \"cliente3@example.cl\"},\n    {\"id_solicitud\": \"DEV-1118\", \"sku\": \"MW-150\", \"unidades\": \"1\", \"monto\": \"79990\", \"dias_desde_compra\": \"4\", \"estado_producto\": \"sin_abrir\", \"email_cliente\": \"cliente4@example.cl\"},\n    {\"id_solicitud\": \"DEV-1119\", \"sku\": \"PL-120\", \"unidades\": \"1\", \"monto\": \"45990\", \"dias_desde_compra\": \"25\", \"estado_producto\": \"danado_por_uso\", \"email_cliente\": \"cliente5@example.cl\"},\n    {\"id_solicitud\": \"DEV-1120\", \"sku\": \"AS-260\", \"unidades\": \"1\", \"monto\": \"89990\", \"dias_desde_compra\": \"2\", \"estado_producto\": \"con_fallas\", \"email_cliente\": \"cliente6@example.cl\"},\n    {\"id_solicitud\": \"DEV-1121\", \"sku\": \"LV-330\", \"unidades\": \"1\", \"monto\": \"289990\", \"dias_desde_compra\": \"9\", \"estado_producto\": \"sin_abrir\", \"email_cliente\": \"cliente7@example.cl\"},\n    {\"id_solicitud\": \"DEV-1122\", \"sku\": \"PL-120\", \"unidades\": \"1\", \"monto\": \"45990\", \"dias_desde_compra\": \"2\", \"estado_producto\": \"sin_abrir\", \"email_cliente\": \"cliente8@example.cl\"},\n    {\"id_solicitud\": \"DEV-1123\", \"sku\": \"AU-210\", \"unidades\": \"2\", \"monto\": \"39980\", \"dias_desde_compra\": \"15\", \"estado_producto\": \"danado_por_uso\", \"email_cliente\": \"cliente9@example.cl\"},\n    {\"id_solicitud\": \"DEV-1124\", \"sku\": \"HV-050\", \"unidades\": \"2\", \"monto\": \"49980\", \"dias_desde_compra\": \"1\", \"estado_producto\": \"abierto_sin_uso\", \"email_cliente\": \"cliente10@example.cl\"},\n    {\"id_solicitud\": \"DEV-1125\", \"sku\": \"TE-330\", \"unidades\": \"1\", \"monto\": \"34990\", \"dias_desde_compra\": \"22\", \"estado_producto\": \"sin_abrir\", \"email_cliente\": \"cliente11@example.cl\"},\n    {\"id_solicitud\": \"DEV-1126\", \"sku\": \"MW-150\", \"unidades\": \"1\", \"monto\": \"79990\", \"dias_desde_compra\": \"8\", \"estado_producto\": \"con_fallas\", \"email_cliente\": \"cliente12@example.cl\"},\n    {\"id_solicitud\": \"DEV-C01\", \"sku\": \"CB-010\", \"unidades\": \"1\", \"monto\": \"9990\", \"dias_desde_compra\": \"1\", \"estado_producto\": \"sin_abrir\", \"email_cliente\": \"control01@example.cl\"},\n    {\"id_solicitud\": \"DEV-C02\", \"sku\": \"LV-330\", \"unidades\": \"1\", \"monto\": \"289990\", \"dias_desde_compra\": \"2\", \"estado_producto\": \"sin_abrir\", \"email_cliente\": \"control02@example.cl\"},\n    {\"id_solicitud\": \"DEV-C03\", \"sku\": \"MW-150\", \"unidades\": \"1\", \"monto\": \"79990\", \"dias_desde_compra\": \"29\", \"estado_producto\": \"abierto_sin_uso\", \"email_cliente\": \"control03@example.cl\"}\n  ]\n}",
+        "options": {}
+      },
+      "id": "5c6271ed-6bd2-4240-9a6b-4192b0ea1671",
+      "name": "Solicitudes (15)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "solicitudes",
+        "options": {}
+      },
+      "id": "b88063fd-4055-46c5-95c8-a7fc9480d916",
+      "name": "Una solicitud por item",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        480,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://diegozuniga.app.n8n.cloud/webhook/andeshogar-devoluciones",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 500
+            }
+          },
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "6bf029a5-6f7f-4a2c-a130-6bca8454a97f",
+      "name": "POST al webhook de triage",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        304
+      ],
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Ejecutar emisor": {
+      "main": [
+        [
+          {
+            "node": "Solicitudes (15)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Solicitudes (15)": {
+      "main": [
+        [
+          {
+            "node": "Una solicitud por item",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Una solicitud por item": {
+      "main": [
+        [
+          {
+            "node": "POST al webhook de triage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "3574f079-a45e-45d4-8e06-7b130692dab6",
+  "meta": {
+    "instanceId": "d6ce76ab889fdf3f613726d16b50c70ca014f2ddf8b07f81c345c68b007c33f9"
+  },
+  "nodeGroups": [],
+  "id": "C6FXFIzoXsvLZPys",
+  "tags": []
+}
